@@ -9,7 +9,7 @@
     <keywords>phonegap,parse,push</keywords>
 
 
-    <js-module src="www/plugin-parse.js" name="ParsePlugin">
+    <js-module src="www/parse-plugin.js" name="ParsePlugin">
         <!--<clobbers target="device" />-->
         <!--<clobbers target="navigator.connection" />-->
         <!--<clobbers target="navigator.network.connection" />-->
