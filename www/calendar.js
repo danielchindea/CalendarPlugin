@@ -1,18 +1,41 @@
-var calendar = {
-    createEvent: function(title, location, notes, startDate, endDate, successCallback, errorCallback) {
-        cordova.exec(
-            successCallback, // success callback function
-            errorCallback, // error callback function
-            'Calendar', // mapped to our native Java class called "CalendarPlugin"
-            'addCalendarEntry', // with this action name
-            [{                  // and this array of custom arguments to create our entry
-                "title": title,
-                "description": notes,
-                "eventLocation": location,
-                "startTimeMillis": startDate.getTime(),
-                "endTimeMillis": endDate.getTime()
-            }]
-        ); 
-    }
+var parsePlugin = {
+	getInstallationId: function(successCallback, errorCallback) {
+		cordova.exec(
+			successCallback,
+			errorCallback,
+			'org.apache.cordova.core.ParsePlugin',
+			'getInstallationId',
+			[]
+		);
+	},
+	
+	getSubscriptions: function(successCallback, errorCallback) {
+		cordova.exec(
+			successCallback,
+			errorCallback,
+			'org.apache.cordova.core.ParsePlugin',
+			'getSubscriptions',
+			[]
+		);
+	},
+	
+	subscribe: function(channel, successCallback, errorCallback) {
+		cordova.exec(
+			successCallback,
+			errorCallback,
+			'org.apache.cordova.core.ParsePlugin',
+			'subscribe',
+			[ channel ]
+		);
+	},
+	
+	unsubscribe: function(channel, successCallback, errorCallback) {
+		cordova.exec(
+			successCallback,
+			errorCallback,
+			'org.apache.cordova.core.ParsePlugin',
+			'unsubscribe',
+			[ channel ]
+		);
+	}
 }
-module.exports = calendar;
