@@ -1,40 +1,78 @@
-package org.devgirl.calendar;
- 
+package com.themobile.parseplugin;
+
+import java.util.Set;
+
 import org.apache.cordova.CallbackContext;
 import org.apache.cordova.CordovaPlugin;
 import org.json.JSONObject;
 import org.json.JSONArray;
 import org.json.JSONException;
 
-import android.app.Activity;
-import android.content.Intent;
+import com.parse.ParseInstallation;
+import com.parse.PushService;
 
-public class Calendar extends CordovaPlugin {
-    public static final String ACTION_ADD_CALENDAR_ENTRY = "addCalendarEntry";
-    
-    @Override
-    public boolean execute(String action, JSONArray args, CallbackContext callbackContext) throws JSONException {
-        try {
-            if (ACTION_ADD_CALENDAR_ENTRY.equals(action)) { 
-                JSONObject arg_object = args.getJSONObject(0);
-                Intent calIntent = new Intent(Intent.ACTION_EDIT)
-                    .setType("vnd.android.cursor.item/event")
-                    .putExtra("beginTime", arg_object.getLong("startTimeMillis"))
-                    .putExtra("endTime", arg_object.getLong("endTimeMillis"))
-                    .putExtra("title", arg_object.getString("title"))
-                    .putExtra("description", arg_object.getString("description"))
-                    .putExtra("eventLocation", arg_object.getString("eventLocation"));
-             
-               this.cordova.getActivity().startActivity(calIntent);
-               callbackContext.success();
-               return true;
-            }
-            callbackContext.error("Invalid action");
-            return false;
-        } catch(Exception e) {
-            System.err.println("Exception: " + e.getMessage());
-            callbackContext.error(e.getMessage());
-            return false;
-        } 
-    }
+public class ParsePlugin extends CordovaPlugin {
+	public static final String ACTION_GET_INSTALLATION_ID = "getInstallationId";
+	public static final String ACTION_GET_SUBSCRIPTIONS = "getSubscriptions";
+	public static final String ACTION_SUBSCRIBE = "subscribe";
+	public static final String ACTION_UNSUBSCRIBE = "unsubscribe";
+	
+	@Override
+	public boolean execute(String action, JSONArray args, CallbackContext callbackContext) throws JSONException {
+		if (action.equals(ACTION_GET_INSTALLATION_ID)) {
+			this.getInstallationId(callbackContext);
+			return true;
+		}
+		if (action.equals(ACTION_GET_SUBSCRIPTIONS)) {
+			this.getSubscriptions(callbackContext);
+			return true;
+		}
+		if (action.equals(ACTION_SUBSCRIBE)) {
+			this.subscribe(args.getString(0), callbackContext);
+			return true;
+		}
+		if (action.equals(ACTION_UNSUBSCRIBE)) {
+			this.unsubscribe(args.getString(0), callbackContext);
+			return true;
+		}
+		return false;
+	}
+	
+	private void getInstallationId(final CallbackContext callbackContext) {
+		cordova.getThreadPool().execute(new Runnable() {
+		    public void run() {
+				String installationId = ParseInstallation.getCurrentInstallation().getInstallationId();
+				callbackContext.success(installationId);
+		    }
+		});
+	}
+	
+	private void getSubscriptions(final CallbackContext callbackContext) {
+		cordova.getThreadPool().execute(new Runnable() {
+		    public void run() {
+				 Set<String> subscriptions = PushService.getSubscriptions(MainApplication.getContext());
+				 callbackContext.success(subscriptions.toString());
+		    }
+		});		
+	}
+	
+	private void subscribe(final String channel, final CallbackContext callbackContext) {
+		cordova.getThreadPool().execute(new Runnable() {
+		    public void run() {
+				PushService.subscribe(MainApplication.getContext(), channel, MainActivity.class);
+				callbackContext.success();
+		    }
+		});
+	}
+	
+	private void unsubscribe(final String channel, final CallbackContext callbackContext) {
+		cordova.getThreadPool().execute(new Runnable() {
+		    public void run() {
+				PushService.unsubscribe(MainApplication.getContext(), channel);
+				callbackContext.success();
+		    }
+		});
+	}
+
 }
+
