@@ -1,4 +1,4 @@
-package com.themobile.parseplugin;
+package org.apache.cordova.parseplugin;
 
 import java.util.Set;
 
