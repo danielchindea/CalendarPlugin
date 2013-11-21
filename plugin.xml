@@ -7,7 +7,7 @@
     <description>Parse push plugin for phonegap</description>
     <license>Apache 2.0</license>
     <keywords>phonegap,parse,push</keywords>
-    <repo>hhttps://github.com/danielchindea/ParsePlugin.git</repo>
+    <repo>https://github.com/danielchindea/ParsePlugin.git</repo>
 
 
     <js-module src="www/parse-plugin.js" name="parseplugin">
